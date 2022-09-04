@@ -6,13 +6,17 @@ import express from 'express';
 import App from '../client/components/App';
 
 const app = express();
-const port = 3000;
+const port = process.env.NODE_ENV === 'production' ? process.env.PORT : 3000;
+const cdnHost =
+  process.env.NODE_ENV === 'production'
+    ? `https://storage.googleapis.com/react-ssr-blog/build/client`
+    : `http://localhost:8080`;
 
 app.get('/', (req, res) => {
   const jsx = ReactDOMServer.renderToString(<App />);
 
-  const clientBundleScript = `<script src="http://localhost:8080/scripts/bundle.js"></script>`;
-  const clientBundleStyle = `<link rel="stylesheet" href="http://localhost:8080/styles/bundle.css">`;
+  const clientBundleStyle = `<link rel="stylesheet" href="${cdnHost}/styles/bundle.css">`;
+  const clientBundleScript = `<script src="${cdnHost}/scripts/bundle.js"></script>`;
 
   res.send(`
         <!DOCTYPE html>
